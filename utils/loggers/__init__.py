@@ -133,9 +133,13 @@ class Loggers():
         # Callback runs at the end of each fit (train+val) epoch
         x = dict(zip(self.keys, vals))
         if self.csv:
-            file = self.save_dir / 'results.csv'
+            # file = self.save_dir / 'results.csv'
+            if not os.path.exists('/tmp/shukui/logs/'):
+                os.makedirs('/tmp/shukui/logs/', exist_ok = True)
+            file = '/tmp/shukui/logs/results.csv'
             n = len(x) + 1  # number of cols
-            s = '' if file.exists() else (('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n')  # add header
+            # s = '' if file.exists() else (('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n')  # add header
+            s = '' if os.path.exists(file) else (('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n')  # add header
             with open(file, 'a') as f:
                 f.write(s + ('%20.5g,' * n % tuple([epoch] + vals)).rstrip(',') + '\n')
 
