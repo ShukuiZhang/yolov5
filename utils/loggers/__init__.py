@@ -133,15 +133,24 @@ class Loggers():
         # Callback runs at the end of each fit (train+val) epoch
         x = dict(zip(self.keys, vals))
         if self.csv:
-            # file = self.save_dir / 'results.csv'
-            if not os.path.exists('/tmp/shukui/logs/'):
-                os.makedirs('/tmp/shukui/logs/', exist_ok = True)
-            file = '/tmp/shukui/logs/results.csv'
+            file = self.save_dir / 'results.csv'
             n = len(x) + 1  # number of cols
+            if file.exists():
+                with open(file, 'r') as f:
+                    file_content = f.readlines()  # return a list of strings in each line
+            else:
+                file_content = [('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n']  # add header
+    
+            # append the content for current epoch
+            file_content.append(('%20.5g,' * n % tuple([epoch] + vals)).rstrip(',') + '\n')
+    
+            with open(file, 'w') as f:
+                for line in file_content:
+                    f.write(line)
+
             # s = '' if file.exists() else (('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n')  # add header
-            s = '' if os.path.exists(file) else (('%20s,' * n % tuple(['epoch'] + self.keys)).rstrip(',') + '\n')  # add header
-            with open(file, 'a') as f:
-                f.write(s + ('%20.5g,' * n % tuple([epoch] + vals)).rstrip(',') + '\n')
+            # with open(file, 'a') as f:
+            #     f.write(s + ('%20.5g,' * n % tuple([epoch] + vals)).rstrip(',') + '\n')
 
         if self.tb:
             for k, v in x.items():

@@ -18,8 +18,6 @@ import os
 import random
 import sys
 import time
-import shutil
-
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -418,13 +416,6 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
         # end epoch ----------------------------------------------------------------------------------------------------
     # end training -----------------------------------------------------------------------------------------------------
     
-    # to deal with databricks /dbfs constraint on appending ops in file system 
-    if not os.path.exists("/tmp/shukui/logs/results.csv"):
-        raise OSError("results.csv not in '/tmp'")
-    else:
-        shutil.copy2("/tmp/shukui/logs/results.csv", save_dir)
-        os.remove("/tmp/shukui/logs/results.csv")
-
     if RANK in {-1, 0}:
         LOGGER.info(f'\n{epoch - start_epoch + 1} epochs completed in {(time.time() - t0) / 3600:.3f} hours.')
         for f in last, best:
